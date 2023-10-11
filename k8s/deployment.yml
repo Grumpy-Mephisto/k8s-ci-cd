@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: os-project
+  name: os-project
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: os-project
+  template:
+    metadata:
+      labels:
+        app: os-project
+    spec:
+      containers:
+        - image: os-project
+          name: os-project
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
