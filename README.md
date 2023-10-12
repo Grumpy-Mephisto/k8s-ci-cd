@@ -75,22 +75,22 @@ git clone
 
 ## `📝` Description
 
-### `📚` Docker
+### `🐳` Docker
 
 ใช้ Docker ในการสร้าง Image ของ Web Server โดย Web Server เราใช้ **Go** ในการทำ Web Server และใช้ **Fiber** เป็น Web Framework ในการทำ Web Server
 
-### `📚` Docker Compose
+### `🦑` Docker Compose
 
 ใช้ Docker Compose ในการสร้าง Container ของ Web Server (สำหรับการทดสอบ)
 
-### `📚` GitHub Actions
+### `🎬` GitHub Actions
 
 ใช้ GitHub Actions ในการ CI ตัว Web Server โดยใช้ **Docker** ในการทำ CI ของ Web Server และทำการ Push Image ของ Web Server ขึ้นไปบน **Docker Hub**
 
-### `📚` Kubernetes
+### `☸️` Kubernetes
 
 ใช้ Kubernetes ในการสร้าง Cluster ของ Web Server โดยใช้ **Minikube** ในการสร้าง Cluster ของ Web Server
 
-### `📚` ArgoCD
+### `🐙` ArgoCD
 
 ใช้ ArgoCD ในการ Deploy และทดสอบ Web Server โดยใช้ **GitOps** ในการ Deploy และทดสอบ Web Server
