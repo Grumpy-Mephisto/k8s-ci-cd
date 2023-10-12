@@ -85,7 +85,7 @@ git clone
 
 ### `📚` GitHub Actions
 
-ใช้ GitHub Actions ในการ CI และ CD ของ Web Server โดยใช้ **Docker** ในการทำ CI และ CD ของ Web Server
+ใช้ GitHub Actions ในการ CI ตัว Web Server โดยใช้ **Docker** ในการทำ CI ของ Web Server และทำการ Push Image ของ Web Server ขึ้นไปบน **Docker Hub**
 
 ### `📚` Kubernetes
 
