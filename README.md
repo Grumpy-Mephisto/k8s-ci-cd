@@ -37,4 +37,4 @@ git clone
    docker run -d -p 3000:3000 web-server
    ```
 
-3. Open your browser and go to `http://localhost:3000` (default port)
+3. เปิดเว็บบราวเซอร์และไปที่ `http://localhost:3000`
