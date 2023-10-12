@@ -20,5 +20,6 @@ RUN go mod download && \
 FROM busybox:1.36.1-glibc AS final
 WORKDIR /os-project
 COPY --from=builder /os-project/build/web-server .
+COPY --from=builder /os-project/build/data ./data
 ENTRYPOINT [ "./web-server" ]
 EXPOSE 3000
