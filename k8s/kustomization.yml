@@ -7,4 +7,4 @@ namespace: argocd-app
 images:
 - name: argocd-app
   newName: pungrumpy/argocd-app
-  newTag: f192ec741eb81ba94172cc281945790125fab808
+  newTag: b8b7e7735365d47175dbc32ffb149f018bb16c68
