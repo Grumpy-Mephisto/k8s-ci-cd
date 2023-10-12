@@ -2,21 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: os-project
-  name: os-project
+    app: argocd-app
+  name: argocd-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: os-project
+      app: argocd-app
   template:
     metadata:
       labels:
-        app: os-project
+        app: argocd-app
     spec:
       containers:
-        - image: os-project
-          name: os-project
+        - image: argocd-app
+          name: argocd-app
           ports:
             - containerPort: 3000
           resources:

@@ -2,8 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: os-project
-  name: os-project
+    app: argocd-app
+  name: argocd-app
 spec:
   ports:
     - name: http
@@ -11,5 +11,5 @@ spec:
       protocol: TCP
       targetPort: 3000
   selector:
-    app: os-project
+    app: argocd-app
   type: NodePort
