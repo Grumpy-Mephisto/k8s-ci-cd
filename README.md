@@ -89,7 +89,7 @@ git clone
 
 ### `☸️` Kubernetes
 
-ใช้ Kubernetes ในการสร้าง Cluster ของ Web Server โดยใช้ **Minikube** ในการสร้าง Cluster ของ Web Server
+ใช้ Kubernetes ในการสร้าง Cluster ของ Web Server โดยใช้ **Kustomize** ในการ Deploy และทดสอบ Web Server
 
 ### `🐙` ArgoCD
 
