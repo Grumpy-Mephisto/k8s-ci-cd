@@ -47,7 +47,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "action@github.com"
-          git commit -am "chore: update image to tag `${{ github.sha }}`"
+          git commit -am "chore: update image to tag ${{ github.sha }}"
       - name: 🚀 Push files
         uses: ad-m/github-push-action@master
         with:
