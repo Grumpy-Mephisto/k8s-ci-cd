@@ -38,6 +38,7 @@ LABEL description="This is a Go web server with Fiber framework"
 WORKDIR /os-project
 COPY --from=builder /os-project/build/web-server .
 COPY --from=builder /os-project/build/data ./data
+COPY --from=builder /os-project/build/public ./public
 USER ${USER_ID}:${GROUP_ID}
 ENTRYPOINT [ "./web-server" ]
 EXPOSE 3000

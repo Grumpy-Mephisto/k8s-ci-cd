@@ -25,6 +25,7 @@ func main() {
 	memberHandler := &handler.MemberHandler{}
 	memberIdHandler := &handler.MemberIdHandler{}
 
+	router.Static("/", "./public")
 	router.Get("/health", healthHandler.Handle)
 	router.Get("/argo", argoHandler.Handle)
 	router.Get("/member", memberHandler.Handle)

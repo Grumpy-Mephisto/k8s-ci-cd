@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 	"time"
 
@@ -48,17 +49,20 @@ func (h *ArgoHandler) Handle(c *fiber.Ctx) error {
 func (h *MemberHandler) Handle(c *fiber.Ctx) error {
 	memberJSON, err := os.ReadFile("data/members.json")
 	if err != nil {
+		log.Printf("Error reading JSON file: %v", err)
 		return err
 	}
 
 	var members []MemberData
 	if err := json.Unmarshal(memberJSON, &members); err != nil {
+		log.Printf("Error unmarshaling JSON: %v", err)
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
 
 	if err := c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"members": members,
 	}); err != nil {
+		log.Printf("Error sending JSON response: %v", err)
 		return err
 	}
 
