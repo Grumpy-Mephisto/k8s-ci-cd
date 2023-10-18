@@ -20,21 +20,5 @@ services:
     ports:
       - 9092:9092
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  web:
-    depends_on:
-      - kafka
-    container_name: os-project
-    image: pungrumpy/os-container-project:latest
-    environment:
-      KAFKA_URL: kafka:9092
-      KAFKA_TOPIC: os-container-project
-    ports:
-      - 3000:3000
-    command: ['./web-server']
-    cpu_count: 1
-    mem_limit: 512m
-    memswap_limit: 1g
-    mem_swappiness: 0
-    restart: always

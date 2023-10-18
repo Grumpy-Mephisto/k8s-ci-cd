@@ -2,24 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: os-container-project
-  name: os-container-project
+    app: kafka
+  name: kafka
   namespace: os-container-project
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: os-container-project
+      app: kafka
   template:
     metadata:
       labels:
-        app: os-container-project
+        app: kafka
     spec:
       containers:
-        - image: os-container-project
-          name: os-container-project
+        - image: kafka
+          name: kafka
           ports:
-            - containerPort: 3000
+            - containerPort: 9092
           resources:
             limits:
               cpu: 100m
@@ -28,7 +28,7 @@ spec:
               cpu: 100m
               memory: 100Mi
           env:
-            - name: KAFKA_URL
-              value: kafka:9092
-            - name: KAFKA_TOPIC
-              value: os-container-project
+            - name: KAFKA_ADVERTISED_HOST_NAME
+              value: kafka
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: zookeeper:2181

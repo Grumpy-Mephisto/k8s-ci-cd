@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: zookeeper
+  name: zookeeper
+  namespace: os-container-project
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: zookeeper
+  serviceName: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+        - image: zookeeper
+          name: zookeeper
+          ports:
+            - containerPort: 2181
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi

@@ -2,36 +2,70 @@ package main
 
 import (
 	"log"
-	"os"
-
-	"os-container-project/internal/handler"
+	"os-container-project/api/handler"
+	"os-container-project/config"
+	"os-container-project/model"
+	"os-container-project/pkg/util"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/segmentio/kafka-go"
 )
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
-	}
-
-	router := fiber.New(fiber.Config{
-		EnableTrustedProxyCheck: true,
-		ProxyHeader:             fiber.HeaderXForwardedFor,
+	app := fiber.New(fiber.Config{
+		Prefork:       config.GetEnvAsBool("PREFORK", false),
+		ServerHeader:  config.GetEnv("SERVER_HEADER", "Fiber"),
+		StrictRouting: config.GetEnvAsBool("STRICT_ROUTING", false),
+		Concurrency:   config.GetEnvAsInt("CONCURRENCY", 256),
+		BodyLimit:     config.GetEnvAsInt("BODY_LIMIT", 4*1024*1024),
 	})
 
-	healthHandler := &handler.HealthHandler{}
-	argoHandler := &handler.ArgoHandler{}
-	memberHandler := &handler.MemberHandler{}
-	memberIdHandler := &handler.MemberIdHandler{}
+	kafkaURL := config.GetEnv("KAFKA_URL", "localhost:9092")
+	kafkaTopic := config.GetEnv("KAFKA_TOPIC", "os-container-project")
 
-	router.Static("/", "./public")
-	router.Get("/health", healthHandler.Handle)
-	router.Get("/argo", argoHandler.Handle)
-	router.Get("/member", memberHandler.Handle)
-	router.Get("/member/:id", memberIdHandler.Handle)
+	kafkaConfig := config.KafkaConfig{
+		URL:   kafkaURL,
+		Topic: kafkaTopic,
+	}
 
-	if err := router.Listen(":" + port); err != nil {
-		log.Fatalf("Failed to start server: %s", err.Error())
+	conn := util.KafkaConn(kafkaConfig)
+	defer conn.Close()
+
+	if !util.IsTopicAlreadyExists(conn, kafkaConfig.Topic) {
+		topicConfig := []kafka.TopicConfig{
+			{
+				Topic:             kafkaConfig.Topic,
+				NumPartitions:     1,
+				ReplicationFactor: 1,
+			},
+		}
+
+		err := conn.CreateTopics(topicConfig...)
+		if err != nil {
+			log.Fatal("Error creating topic:", err)
+		}
+	}
+
+	var members []model.Member
+	if err := util.LoadJSONFile("data/members.json", &members); err != nil {
+		log.Fatal("Error loading members from JSON:", err)
+	}
+
+	messages := util.GenerateKafkaMessages(members)
+
+	if err := conn.SetReadDeadline(time.Now().Add(10 * time.Second)); err != nil {
+		log.Fatal("Failed to set read deadline:", err)
+	}
+	_, err := conn.WriteMessages(messages...)
+	if err != nil {
+		log.Fatal("Failed to write messages:", err)
+	}
+
+	memberAPIHandler := handler.NewMemberAPIHandler(members)
+	memberAPIHandler.RegisterRoutes(app)
+
+	if err := app.Listen(":3000"); err != nil {
+		log.Fatal("Error starting server:", err)
 	}
 }
