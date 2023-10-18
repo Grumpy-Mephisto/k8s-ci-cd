@@ -138,3 +138,4 @@ WORKDIR /app
 COPY --from=builder /app/web-server-compressed /app/web-server
 COPY --from=builder /app/data /app/data
 EXPOSE 3000
+CMD ["/app/web-server"]
