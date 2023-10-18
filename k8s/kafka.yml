@@ -29,6 +29,6 @@ spec:
               memory: 100Mi
           env:
             - name: KAFKA_ADVERTISED_HOST_NAME
-              value: kafka
+              value: localhost
             - name: KAFKA_ZOOKEEPER_CONNECT
               value: zookeeper:2181
