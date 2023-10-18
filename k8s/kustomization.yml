@@ -1,18 +1,18 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - deployment.yml
-  - service.yml
-  - kafka.yml
-  - zookeeper.yml
+- deployment.yml
+- service.yml
+- kafka.yml
+- zookeeper.yml
 namespace: os-container-project
 images:
-  - name: os-container-project
-    newName: pungrumpy/os-container-project
-    newTag: 467f428274b88046934b462c78fdb5180076a523
-  - name: kafka
-    newName: wurstmeister/kafka
-    newTag: 2.13-2.8.1
-  - name: zookeeper
-    newName: wurstmeister/zookeeper
-    newTag: 3.9.1-jre-17
+- name: kafka
+  newName: wurstmeister/kafka
+  newTag: 2.13-2.8.1
+- name: os-container-project
+  newName: pungrumpy/os-container-project
+  newTag: 7df6b4e4fe9a97376b9315d1dccf1eb8e9c8db4b
+- name: zookeeper
+  newName: wurstmeister/zookeeper
+  newTag: 3.9.1-jre-17
