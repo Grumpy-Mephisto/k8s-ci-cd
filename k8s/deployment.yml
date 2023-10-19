@@ -29,6 +29,6 @@ spec:
               memory: 100Mi
           env:
             - name: KAFKA_URL
-              value: localhost:9092
+              value: kafka:30268
             - name: KAFKA_TOPIC
               value: os-container-project
