@@ -39,13 +39,11 @@ func (h *MemberAPIHandler) AddMember(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
 
+	if member.ID == "" || member.Name == "" {
+		return c.Status(fiber.StatusBadRequest).SendString("ID and Name are required")
+	}
+
 	h.members = append(h.members, *member)
 
 	return c.JSON(member)
-}
-
-func (h *MemberAPIHandler) RegisterRoutes(app *fiber.App) {
-	app.Get("/api/v1/members", h.GetMembers)
-	app.Get("/api/v1/members/:id", h.GetMemberByID)
-	app.Post("/api/v1/members", h.AddMember)
 }

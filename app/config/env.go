@@ -5,11 +5,6 @@ import (
 	"strconv"
 )
 
-type KafkaConfig struct {
-	URL   string
-	Topic string
-}
-
 func GetEnv(key, defaultValue string) string {
 	value := os.Getenv(key)
 	if value == "" {
@@ -31,6 +26,9 @@ func GetEnvAsInt(key string, defaultValue int) int {
 	if value == "" {
 		return defaultValue
 	}
-	strconv.Atoi(value)
-	return defaultValue
+	intValue, err := strconv.Atoi(value)
+	if err != nil {
+		return defaultValue
+	}
+	return intValue
 }

@@ -2,8 +2,10 @@ version: '3'
 volumes:
   kafka_data:
     driver: local
+  cassandra_data:
+    driver: local
 networks:
-  kafka-net:
+  os-container-network:
     driver: bridge
 services:
   zookeeper:
@@ -11,7 +13,9 @@ services:
     container_name: zookeeper
     ports:
       - 2181:2181
-    restart: always
+    restart: unless-stopped
+    networks:
+      - os-container-network
   kafka:
     depends_on:
       - zookeeper
@@ -22,3 +26,6 @@ services:
     environment:
       KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    restart: unless-stopped
+    networks:
+      - os-container-network
