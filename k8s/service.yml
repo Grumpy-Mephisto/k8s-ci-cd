@@ -13,19 +13,3 @@ spec:
   selector:
     app: os-container-project
   type: NodePort
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: kafka
-  name: kafka
-spec:
-  ports:
-    - name: kafka
-      port: 9092
-      protocol: TCP
-      targetPort: 9092
-  selector:
-    app: kafka
-  type: NodePort
