@@ -7,7 +7,7 @@ type KafkaConfig struct {
 
 func LoadKafkaConfig() *KafkaConfig {
 	return &KafkaConfig{
-		URL:   GetEnv("KAFKA_URL", "localhost:9092"),
+		URL:   GetEnv("KAFKA_URL", "localhost:9093"),
 		Topic: GetEnv("KAFKA_TOPIC", "member"),
 	}
 }
