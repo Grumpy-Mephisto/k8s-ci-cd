@@ -8,4 +8,4 @@ namespace: os-container-project
 images:
 - name: os-container-project
   newName: pungrumpy/os-container-project
-  newTag: a3993873cb46749e70b067be20a4883c150620c7
+  newTag: 66f1f21eae13b87b11c88fd33a7ca18a20168076
