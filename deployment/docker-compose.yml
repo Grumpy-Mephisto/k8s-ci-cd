@@ -3,7 +3,7 @@ volumes:
   kafka_data:
     driver: local
 networks:
-  kafka-net:
+  os-container-project-network:
     driver: bridge
 services:
   zookeeper:
@@ -11,7 +11,9 @@ services:
     container_name: zookeeper
     ports:
       - 2181:2181
-    restart: always
+    restart: unless-stopped
+    networks:
+      - os-container-project-network
   kafka:
     depends_on:
       - zookeeper
@@ -22,6 +24,9 @@ services:
     environment:
       KAFKA_ADVERTISED_HOST_NAME: kafka
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    restart: unless-stopped
+    networks:
+      - os-container-project-network
   web:
     depends_on:
       - kafka
@@ -37,4 +42,6 @@ services:
     mem_limit: 512m
     memswap_limit: 1g
     mem_swappiness: 0
-    restart: always
+    restart: unless-stopped
+    networks:
+      - os-container-project-network
