@@ -24,7 +24,7 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.APP_NAME }}:latest, ${{ secrets.DOCKER_USERNAME }}/${{ env.APP_NAME }}:${{ github.sha }}
-          context: ./web-server
+          context: ./app
   deploy:
     name: 🚀 Deploy
     needs: build
