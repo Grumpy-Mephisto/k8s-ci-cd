@@ -12,7 +12,7 @@ images:
   newTag: 2.13-2.8.1
 - name: os-container-project
   newName: pungrumpy/os-container-project
-  newTag: a9d6a0615cb9312bdc5c725b4f44cba695ef9726
+  newTag: a334b36c1c2869ae587ecd5685d55fa4c3e0bfd3
 - name: zookeeper
   newName: zookeeper
   newTag: 3.9.1-jre-17
