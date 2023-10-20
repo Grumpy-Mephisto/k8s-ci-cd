@@ -21,11 +21,11 @@ func KafkaConn(config config.KafkaConfig) *kafka.Conn {
 
 func GenerateKafkaMessages(members []model.Member) []kafka.Message {
 	messages := make([]kafka.Message, 0)
-	for _, member := range members {
-		message := kafka.Message{
-			Value: ToJSONBytes(&member),
-		}
-		messages = append(messages, message)
+	for index := range members {
+		messages = append(messages, kafka.Message{
+			Key:   []byte(members[index].ID),
+			Value: ToJSONBytes(members[index]),
+		})
 	}
 	return messages
 }

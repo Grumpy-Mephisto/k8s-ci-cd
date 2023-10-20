@@ -3,6 +3,8 @@ package util
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 func ToJSONBytes(v interface{}) []byte {
@@ -11,14 +13,15 @@ func ToJSONBytes(v interface{}) []byte {
 }
 
 func LoadJSONFile(filename string, data interface{}) error {
-	fileData, err := os.ReadFile(filename)
+	repoFile := filepath.Clean(filename)
+	if !strings.HasPrefix(repoFile, "data/") {
+		return os.ErrInvalid
+	}
+
+	byContext, err := os.ReadFile(repoFile)
 	if err != nil {
 		return err
 	}
 
-	if err := json.Unmarshal(fileData, data); err != nil {
-		return err
-	}
-
-	return nil
+	return json.Unmarshal(byContext, data)
 }
