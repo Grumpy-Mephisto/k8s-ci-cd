@@ -1,4 +1,40 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zookeeper-pv
+  namespace: kafka
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: "100Mi"
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  local:
+    path: "/var/lib/zookeeper"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - k3s-master
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zookeeper-claim
+  namespace: kafka
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: "100Mi"
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: zookeeper-config
@@ -51,6 +87,13 @@ spec:
               port: 2181
             initialDelaySeconds: 15
             periodSeconds: 20
+          volumeMounts:
+            - name: zookeeper-persistent-storage
+              mountPath: "/bitnami"
+      volumes:
+        - name: zookeeper-persistent-storage
+          persistentVolumeClaim:
+            claimName: zookeeper-claim
 ---
 apiVersion: v1
 kind: Service
