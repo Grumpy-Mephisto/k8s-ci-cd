@@ -19,6 +19,10 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd /home/${{ secrets.USERNAME }}/${{ secrets.REPO }}
-            git clone git@github.com:PunGrumpy/k8s-ci-cd.git
-            cd k8s-ci-cd
-            kubectl apply -k k8s
+            if [[ -d "k8s-ci-cd" ]]; then
+              cd k8s-ci-cd
+              git pull origin main
+            else
+              git clone git@github.com:PunGrumpy/k8s-ci-cd.git
+            cd deployment
+            docker compose up -d
