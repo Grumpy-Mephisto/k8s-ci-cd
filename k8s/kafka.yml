@@ -40,21 +40,11 @@ spec:
             - containerPort: 9092
           resources:
             requests:
-              cpu: "256m"
+              cpu: "512m"
               memory: "1Gi"
             limits:
-              cpu: "256m"
+              cpu: "512m"
               memory: "1Gi"
-          readinessProbe:
-            tcpSocket:
-              port: 9092
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 9092
-            initialDelaySeconds: 15
-            periodSeconds: 20
 ---
 apiVersion: v1
 kind: Service
