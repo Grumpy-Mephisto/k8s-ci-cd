@@ -24,6 +24,8 @@ jobs:
         with:
           version: v1.54
           args: ./app/...
+      - name: 🛡️ Golang Security
+        uses: securego/gosec@master
   build:
     name: 🔨 Build
     needs: test
