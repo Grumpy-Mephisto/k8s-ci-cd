@@ -19,6 +19,6 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd /home/${{ secrets.USERNAME }}/${{ secrets.REPO }}
-            git clone ${{ github.event.repository.url }}
+            git clone ${{ github.repositoryUrl }}
             cd ${{ github.event.repository.name }}
             kubectl apply -k k8s
