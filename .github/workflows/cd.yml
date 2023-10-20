@@ -1,0 +1,26 @@
+name: 🚚 Continuous Delivery
+on:
+  workflow_run:
+    workflows:
+      - test
+      - build
+      - deploy
+    types:
+      - completed
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout
+        uses: actions/checkout@v3
+      - name: 🚀 Deploy to remote server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd /home/${{ secrets.USERNAME }}/${{ secrets.REPO }}
+            git clone ${{ github.event.repository.url }}
+            cd ${{ github.event.repository.name }}
+            kubectl apply -k k8s
