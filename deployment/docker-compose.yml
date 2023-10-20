@@ -10,6 +10,8 @@ services:
       - 2181:2181
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    mem_reservation: 256m
+    mem_limit: 512m
     restart: unless-stopped
     networks:
       - os-container-network
@@ -29,6 +31,9 @@ services:
       KAFKA_LOG_CLEANER_DELETE_RETENTION_MS: 5000
       KAFKA_BROKER_ID: 1
       KAFKA_MIN_INSYNC_REPLICAS: 1
+    cpu_shares: 256
+    mem_reservation: 512m
+    mem_limit: 1g
     restart: unless-stopped
     networks:
       - os-container-network
@@ -46,6 +51,8 @@ services:
       OFFSET_STORAGE_TOPIC: os_container_offsets
       STATUS_STORAGE_TOPIC: os_container_statuses
       BOOTSTRAP_SERVERS: kafka:9092
+    mem_reservation: 512m
+    mem_limit: 1g
     restart: unless-stopped
     networks:
       - os-container-network
@@ -63,24 +70,24 @@ services:
       CONTROL_CENTER_REPLICATION_FACTOR: 1
       CONTROL_CENTER_CONNECT_CLUSTER: http://debezium_connect:8083
       PORT: 9021
+    mem_reservation: 512m
+    mem_limit: 1g
     restart: unless-stopped
     networks:
       - os-container-network
   web:
     depends_on:
       - kafka
-    container_name: os-project
     image: pungrumpy/os-container-project:latest
+    container_name: os-project
+    ports:
+      - 3000:3000
     environment:
       KAFKA_URL: kafka:9092
       KAFKA_TOPIC: os-container-project
-    ports:
-      - 3000:3000
     command: ['./web-server']
-    cpu_count: 1
-    mem_limit: 512m
-    memswap_limit: 1g
-    mem_swappiness: 0
+    mem_limit: 256m
+    memswap_limit: 512m
     restart: unless-stopped
     networks:
       - os-container-network
