@@ -7,7 +7,10 @@ import (
 )
 
 func SetupRoutes(app *fiber.App, memberHandler *handler.MemberAPIHandler) {
-	app.Get("/api/v1/members", memberHandler.GetMembers)
-	app.Get("/api/v1/members/:id", memberHandler.GetMemberByID)
-	app.Post("/api/v1/members", memberHandler.AddMember)
+	v1 := app.Group("/api/v1")
+
+	member := v1.Group("/members")
+	member.Get("/", memberHandler.GetMembers)
+	member.Get("/:id", memberHandler.GetMemberByID)
+	member.Post("/", memberHandler.AddMember)
 }
