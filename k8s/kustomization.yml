@@ -4,9 +4,9 @@ metadata:
   namespace: os-container-project
 resources:
 - local-storageClass.yml
+- network-policy.yml
 - zookeeper.yml
 - kafka.yml
-- network-policy.yml
 - webserver.yml
 images:
 - name: os-container-project
