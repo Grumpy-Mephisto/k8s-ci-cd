@@ -13,7 +13,7 @@ import (
 func KafkaConn(config config.KafkaConfig) *kafka.Conn {
 	conn, err := kafka.DialLeader(context.Background(), "tcp", config.URL, config.Topic, 0)
 	if err != nil {
-		log.Fatal("Error connecting to kafka:", err)
+		log.Fatal("Error connecting to kafka:", err.Error())
 	}
 
 	return conn
@@ -33,7 +33,7 @@ func GenerateKafkaMessages(members []model.Member) []kafka.Message {
 func IsTopicAlreadyExists(conn *kafka.Conn, topic string) bool {
 	partitions, err := conn.ReadPartitions()
 	if err != nil {
-		log.Fatal("Error reading partitions:", err)
+		log.Fatal("Error reading partitions:", err.Error())
 	}
 
 	for _, partition := range partitions {
