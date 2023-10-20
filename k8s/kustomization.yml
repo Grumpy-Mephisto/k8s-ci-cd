@@ -1,12 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+metadata:
+  namespace: os-container-project
 resources:
 - local-storageClass.yml
 - zookeeper.yml
 - kafka.yml
 - network-policy.yml
 - webserver.yml
-namespace: os-container-project
 images:
 - name: os-container-project
   newName: pungrumpy/os-container-project
