@@ -2,9 +2,7 @@ name: 🚚 Continuous Delivery
 on:
   workflow_run:
     workflows:
-      - test
-      - build
-      - deploy
+      - 🔍 Continuous Integration
     types:
       - completed
 jobs:
