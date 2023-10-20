@@ -18,60 +18,30 @@
 1. โคลน Repository นี้ลงมา
 
 ```bash
-git clone
+git clone git@github.com:PunGrumpy/k8s-ci-cd.git
 ```
 
-2. สั่งรัน Docker
+2. สั่งรัน Application
 
-   2.1 ใช้คำสั่ง `docker compose` ในการรัน
-
-   ```bash
-   cd web-server
-   docker-compose up -d # docker compose up -d
-   ```
-
-   2.2 ใช้คำสั่ง `docker` ในการรัน
+   2.1 สำหรับ Docker
 
    ```bash
-   cd web-server
-   docker build -t web-server .
-   docker run -d -p 3000:3000 web-server
+   cd deployment
+   docker compose up -d
    ```
 
-3. เปิดเว็บบราวเซอร์และไปที่ `http://localhost:3000`
-
-4. เปิดใช้งาน **[ArgoCD](https://argo-cd.readthedocs.io/en/stable/)**
-
-   4.1 สร้าง Namespace ของ ArgoCD
+   2.2 สำหรับ Kubernetes
 
    ```bash
-    kubectl create namespace argocd
+   kubectl apply -k k8s/
    ```
 
-   4.2 ติดตั้ง ArgoCD โดยใช้คำสั่ง
+3. เข้าไปที่ [http://localhost:3000](http://localhost:3000) เพื่อเข้าสู่เว็บไซต์
 
-   ```bash
-    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-   ```
+### `🔮` Optional
 
-   4.3 ตรวจสอบว่า ArgoCD ทำงานอยู่หรือไม่
-
-   ```bash
-    kubectl get pods -n argocd
-   ```
-
-   4.4 เข้าถึงเซิฟเวอร์ ArgoCD โดยใช้คำสั่ง
-
-   ```bash
-    kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-    kubectl port-forward svc/argocd-server -n argocd 8080:443
-   ```
-
-   4.5 เข้าสู่ระบบโดยใช้ Username และ Password ที่ได้รับจากคำสั่ง
-
-   ```bash
-    kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-   ```
+- สามารถเข้าไปที่ [http://localhost:9021](http://localhost:9021) เพื่อเข้าสู่ Control Center ของ Kafka ได้
+- สามารถเข้าไปที่ [http://localhost:8083](http://localhost:8083) เพื่อเข้าสู่ Debezium ได้
 
 ## `📝` Description
 
@@ -79,18 +49,26 @@ git clone
 
 ใช้ Docker ในการสร้าง Image ของ Web Server โดย Web Server เราใช้ **Go** ในการทำ Web Server และใช้ **Fiber** เป็น Web Framework ในการทำ Web Server
 
-### `🦑` Docker Compose
+### `🏭` Container
 
-ใช้ Docker Compose ในการสร้าง Container ของ Web Server (สำหรับการทดสอบ)
+#### `🐳` Docker Compose
 
-### `🎬` GitHub Actions
+ใช้ Docker Compose ในการสร้าง Container ของ Web Server และ Database ขึ้นมา โดยใช้ Docker Compose ในการสร้าง Container ขึ้นมา 5 ตัว ได้แก่ Web Server, Kafka, Zookeeper, Control Center และ Debezium (connector) โดยที่ Web Server จะเป็น Container ที่เราสร้างขึ้นมาเอง ส่วน Kafka, Zookeeper, Control Center และ Debezium จะเป็น Container ที่เราดึงมาจาก Docker Hub
 
-ใช้ GitHub Actions ในการ CI ตัว Web Server โดยใช้ **Docker** ในการทำ CI ของ Web Server และทำการ Push Image ของ Web Server ขึ้นไปบน **Docker Hub**
+#### `⚓` Kubernetes
 
-### `☸️` Kubernetes
+ใช้ Kubernetes ในการสร้าง Container ของ Web Server และ Database ขึ้นมา โดยใช้ Kubernetes ในการสร้าง Container ขึ้นมา 5 ตัว ได้แก่ Web Server, Kafka, Zookeeper, Control Center และ Debezium (connector) โดยที่ Web Server จะเป็น Container ที่เราสร้างขึ้นมาเอง ส่วน Kafka, Zookeeper, Control Center และ Debezium จะเป็น Container ที่เราใช้ Image จาก Docker Hub
 
-ใช้ Kubernetes ในการสร้าง Cluster ของ Web Server โดยใช้ **Kustomize** ในการ Deploy และทดสอบ Web Server
+### `📇` GitOps
 
-### `🐙` ArgoCD
+#### `🔍` GitHub Actions
 
-ใช้ ArgoCD ในการ Deploy และทดสอบ Web Server โดยใช้ **GitOps** ในการ Deploy และทดสอบ Web Server
+ใช้ GitHub Actions ในการทำ CI โดยที่เมื่อเราทำการ Test และ Build แล้ว จะทำการ Push Image ขึ้นไปบน Docker Hub และทำการอัปเดต Image บน Kubernetes โดยอัตโนมัติ และทำการ CD โดยที่เมื่อเราทำการ Deploy ไปที่ Remote Server (ลองแล้วทั้ง Kubernetes และ Docker Compose ทั้งสองตัว)
+
+> **Note**: แต่ที่ Disable `cd.yml` เพราะ Remote Server ของเราขนาดไม่เพียงพอ จึงแนะนำให้ run ใน Local แทน
+
+#### `🔍` ArgoCD
+
+ใช้ ArgoCD ในการทำ CD โดยที่เมื่อเราทำการ Push Image ขึ้นไปบน Docker Hub แล้ว จะทำการอัปเดต Image บน Kubernetes โดยอัตโนมัติ
+
+> **Note**: เราไม่ได้ใช้เพราะเนื่องจาก Remote Server ของเราขนาดไม่เพียงพอ จึงแนะนำให้ run ใน Local แทน
