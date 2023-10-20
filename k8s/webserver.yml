@@ -2,36 +2,37 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: os-container-project
-  name: os-container-project
+    app: webserver
+  name: webserver
   namespace: os-container-project
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: os-container-project
+      app: webserver
   template:
     metadata:
       labels:
-        app: os-container-project
+        app: webserver
+      name: webserver
     spec:
       containers:
         - image: os-container-project
-          name: os-container-project
+          name: webserver
           ports:
             - containerPort: 3000
           resources:
             limits:
-              cpu: 100m
-              memory: 100Mi
+              cpu: "100m"
+              memory: "100Mi"
             requests:
-              cpu: 100m
-              memory: 100Mi
+              cpu: "100m"
+              memory: "100Mi"
           securityContext:
             runAsUser: 1000
           env:
             - name: KAFKA_URL
-              value: kafka-service:9092
+              value: kafka:9092
             - name: KAFKA_TOPIC
               value: os-container-project
 ---
@@ -39,8 +40,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: os-container-project
-  name: os-container-project
+    app: webserver
+  name: webserver
 spec:
   ports:
     - name: http
@@ -48,5 +49,5 @@ spec:
       protocol: TCP
       targetPort: 3000
   selector:
-    app: os-container-project
+    app: webserver
   type: NodePort

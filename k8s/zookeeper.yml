@@ -1,7 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zookeeper-config
+data:
+  ALLOW_ANONYMOUS_LOGIN: "yes"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app: zookeeper
   name: zookeeper
+  namespace: os-container-project
 spec:
   replicas: 1
   selector:
@@ -11,33 +21,48 @@ spec:
     metadata:
       labels:
         app: zookeeper
+      name: zookeeper
     spec:
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
       containers:
-        - name: zookeeper
-          image: zookeeper:3.9.1-jre-17
+        - image: bitnami/zookeeper
+          name: zookeeper
+          envFrom:
+            - configMapRef:
+                name: zookeeper-config
           ports:
             - containerPort: 2181
           resources:
-            limits:
-              cpu: 100m
-              memory: 100Mi
             requests:
-              cpu: 100m
-              memory: 100Mi
-          env:
-            - name: ZOOKEEPER_ID
-              value: "1"
-            - name: ZOOKEEPER_SERVER_1
-              value: zookeeper
+              cpu: "1"
+              memory: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "256Mi"
+          readinessProbe:
+            tcpSocket:
+              port: 2181
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 2181
+            initialDelaySeconds: 15
+            periodSeconds: 20
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: zookeeper-service
+  name: zookeeper
+  namespace: os-container-project
 spec:
-  selector:
-    app: zookeeper-service
   ports:
-    - protocol: TCP
+    - name: zookeeper
       port: 2181
+      protocol: TCP
       targetPort: 2181
+  selector:
+    app: zookeeper
+  type: ClusterIP
