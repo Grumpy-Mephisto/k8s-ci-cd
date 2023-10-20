@@ -40,10 +40,10 @@ spec:
             - containerPort: 9092
           resources:
             requests:
-              cpu: "2"
+              cpu: "256m"
               memory: "1Gi"
             limits:
-              cpu: "2"
+              cpu: "256m"
               memory: "1Gi"
           readinessProbe:
             tcpSocket:
