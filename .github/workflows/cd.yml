@@ -19,10 +19,11 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd /home/${{ secrets.USERNAME }}/${{ secrets.REPO }}
-            if [[ -d "k8s-ci-cd" ]]; then
-              cd k8s-ci-cd
-              git pull origin main
+            if test -d "k8s-ci-cd"
+                cd k8s-ci-cd
+                git pull origin main
             else
-              git clone git@github.com:PunGrumpy/k8s-ci-cd.git
+                git clone git@github.com:PunGrumpy/k8s-ci-cd.git
+            end
             cd deployment
             docker compose up -d
