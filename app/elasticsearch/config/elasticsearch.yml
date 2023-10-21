@@ -1,0 +1,24 @@
+###### GENERAL SETTINS #####
+
+# Cluster
+cluster.name: 'os-container-project-cluster'
+node.name: 'os-container-project-node'
+node.attr.zone: 'th'
+
+# Node
+node.data: true
+node.master: true
+
+# Network
+network.host: 0.0.0.0
+discovery.zen.minimum_master_nodes: 1
+
+# Ports
+http.port: 9200
+transport.tcp.port: 9300
+
+# Memory
+bootstrap.memory_lock: true
+
+# Security
+script.allowed_types: inline

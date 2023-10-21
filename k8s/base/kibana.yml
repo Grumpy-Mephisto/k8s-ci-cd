@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: kibana
+  name: kibana
+  namespace: os-container-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  serviceName: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+      name: kibana
+    spec:
+      containers:
+        - image: docker.elastic.co/kibana/kibana:7.16.0
+          name: kibana
+          ports:
+            - containerPort: 5601
+          resources:
+            limits:
+              cpu: '1'
+              memory: '512Mi'
+            requests:
+              cpu: '0.5'
+              memory: '256Mi'
+          securityContext:
+            runAsUser: 1000
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: 'http://elasticsearch:9200'
+            - name: ELASTICSEARCH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-credentials
+                  key: username
+            - name: ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-credentials
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kibana
+  name: kibana
+  namespace: os-container-project
+spec:
+  ports:
+    - port: 5601
+      protocol: TCP
+      targetPort: 5601
+  selector:
+    app: kibana
+  type: ClusterIP
