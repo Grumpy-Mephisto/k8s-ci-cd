@@ -4,6 +4,7 @@ metadata:
   labels:
     app: redis
   name: redis
+  namespace: os-container-project
 spec:
   replicas: 1
   selector:
@@ -38,6 +39,7 @@ metadata:
   labels:
     app: redis
   name: redis
+  namespace: os-container-project
 spec:
   ports:
     - port: 6379
