@@ -23,11 +23,26 @@ spec:
             - containerPort: 3000
           resources:
             limits:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: '100m'
+              memory: '100Mi'
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: '100m'
+              memory: '100Mi'
+          env:
+            - name: ELASTICSEARCH_URL
+              value: http://elasticsearch:9200
+            - name: ELASTICSEARCH_INDEX_NAME
+              value: os-container-project
+            - name: ELASTICSEARCH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-credentials
+                  key: username
+            - name: ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-credentials
+                  key: password
           securityContext:
             runAsUser: 1000
 ---
@@ -37,6 +52,7 @@ metadata:
   labels:
     app: webserver
   name: webserver
+  namespace: os-container-project
 spec:
   ports:
     - name: http

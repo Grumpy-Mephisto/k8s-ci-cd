@@ -3,6 +3,7 @@ kind: Kustomization
 metadata:
   namespace: os-container-project
 resources:
+- base/secret.yml
 - base/elasticsearch.yml
 - base/kibana.yml
 - base/webserver.yml

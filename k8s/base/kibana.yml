@@ -25,10 +25,10 @@ spec:
           resources:
             limits:
               cpu: '1'
-              memory: '512Mi'
+              memory: '1Gi'
             requests:
               cpu: '0.5'
-              memory: '256Mi'
+              memory: '512Mi'
           securityContext:
             runAsUser: 1000
           env:
