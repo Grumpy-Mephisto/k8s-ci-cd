@@ -1,0 +1,105 @@
+body {
+  font-family: Arial, sans-serif;
+  background: url('./assets/background.png') no-repeat center center fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  transition: background-color 0.3s;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+.card {
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  border: rgba(255, 255, 255, 0.15) solid 1px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.intro h1 {
+  color: #fff;
+  transition: color 0.3s;
+}
+
+button {
+  background: linear-gradient(45deg, #5a78e9, #e53e7b);
+  background-size: 200% 100%;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  animation: colorChange 10s infinite linear alternate;
+}
+
+button:hover {
+  background-size: 200% 100%;
+  color: #fff;
+  animation: colorChange 10s infinite linear alternate-reverse;
+}
+
+@keyframes colorChange {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+#apiData {
+  margin-top: 20px;
+  transition: transform 0.3s;
+}
+
+ul {
+  padding: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.member-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  list-style: none;
+  margin: 0;
+  transition: background-color 0.3s;
+}
+
+.member-list.active {
+  background-color: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.member-item {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+  list-style: none;
+  border: rgba(255, 255, 255, 0.05) solid 1px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s;
+}

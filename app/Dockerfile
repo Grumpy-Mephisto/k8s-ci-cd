@@ -136,5 +136,6 @@ LABEL project="os-container-project"
 LABEL description="A minimal container image for a web server"
 WORKDIR /app
 COPY --from=builder /app/api-server-compressed /app/api-server
+COPY --from=builder /app/public /app/public
 EXPOSE 3000
 CMD ["/app/api-server"]
