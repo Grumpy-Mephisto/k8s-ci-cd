@@ -1,0 +1,35 @@
+version: 2.1
+executors:
+  golang-executor:
+    docker:
+      - image: golang:1.23.1
+
+jobs:
+  build:
+    executor: golang-executor
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Setup Golangci-lint
+          command: |
+            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2
+      - run:
+          name: Setup Gosec
+          command: |
+            curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.18.1
+      - run:
+          name: Run Golangci-lint
+          command: |
+            golangci-lint run ./app/...
+      - run:
+          name: Run Gosec
+          command: |
+            gosec ./app/...
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
