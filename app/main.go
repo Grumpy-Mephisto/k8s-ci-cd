@@ -4,6 +4,7 @@ import (
 	"os-container-project/internal/api/routes"
 	"os-container-project/internal/config"
 	"os-container-project/internal/data"
+	"os-container-project/internal/model"
 	"os-container-project/pkg/utils"
 
 	"github.com/gofiber/fiber/v2"
@@ -20,17 +21,19 @@ func main() {
 	}))
 	app.Static("/", "./public")
 
-	esConfig := config.NewElasicSearchConfig()
-
-	esClient, err := esConfig.NewElasticsearchClient()
+	mariaDBConfig := config.NewMariaDBConfig()
+	mariadbClient, err := mariaDBConfig.NewMariaDBClient()
 	if err != nil {
-		log.Fatalf("Error while creating elasticsearch client: %s", err.Error())
+		log.Fatalf("Error while creating mariadb client: %s", err.Error())
 	}
-	if err := data.SetDefaultData(esClient); err != nil {
+	mariadbClient.AutoMigrate(&model.Member{})
+	if err := data.SetDefaultData(mariadbClient); err != nil {
 		log.Fatalf("Error while setting default data: %s", err.Error())
 	}
 
-	routes.SetupRoutes(app, esConfig)
+	redisConfig := config.NewRedisConfig()
+
+	routes.SetupRoutes(app, mariadbClient, redisConfig)
 
 	if err := app.Listen(utils.GetEnv("PORT", ":3000").(string)); err != nil {
 		log.Fatalf("Error while listening: %s", err.Error())

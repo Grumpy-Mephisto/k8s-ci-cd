@@ -10,7 +10,7 @@ function fetchData() {
 
       data.forEach(member => {
         const listItem = document.createElement('li')
-        listItem.innerHTML = `<strong>ID:</strong> ${member.id}<br><strong>Name:</strong> ${member.name}`
+        listItem.innerHTML = `<strong>ID:</strong> ${member.student_id}<br><strong>Name:</strong> ${member.name}`
         listItem.classList.add('member-item')
         memberList.appendChild(listItem)
       })

@@ -29,20 +29,34 @@ spec:
               cpu: '100m'
               memory: '100Mi'
           env:
-            - name: ELASTICSEARCH_URL
-              value: http://elasticsearch:9200
-            - name: ELASTICSEARCH_INDEX_NAME
-              value: os-container-project
-            - name: ELASTICSEARCH_USERNAME
+            - name: MARIADB_HOST
+              value: mariadb
+            - name: MARIADB_PORT
+              value: '3306'
+            - name: MARIADB_USER
               valueFrom:
                 secretKeyRef:
-                  name: elasticsearch-credentials
-                  key: username
-            - name: ELASTICSEARCH_PASSWORD
+                  key: user
+                  name: mariadb
+            - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: elasticsearch-credentials
                   key: password
+                  name: mariadb
+            - name: MARIADB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: database
+                  name: mariadb
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: '6379'
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: redis
           securityContext:
             runAsUser: 1000
 ---

@@ -1,52 +1,45 @@
 package data
 
 import (
-	"context"
+	"os-container-project/internal/model"
 
-	"github.com/olivere/elastic/v7"
+	"gorm.io/gorm"
 )
 
-func SetDefaultData(client *elastic.Client) error {
-	defaultData := []map[string]interface{}{
+func SetDefaultData(db *gorm.DB) error {
+	defaultData := []model.Member{
 		{
-			"id":   "65050295",
-			"name": "นายณัฐพงศ์ พงศ์จารุมณี",
+			StudentID: "65050295",
+			Name:      "นายณัฐพงศ์ พงศ์จารุมณี",
 		},
 		{
-			"id":   "65050427",
-			"name": "นายธีรวัจน์ ลือสัตย์",
+			StudentID: "65050427",
+			Name:      "นายธีรวัจน์ ลือสัตย์",
 		},
 		{
-			"id":   "65050431",
-			"name": "นายนนท์ปวิธ บัวผุย",
+			StudentID: "65050431",
+			Name:      "นายนนท์ปวิธ บัวผุย",
 		},
 		{
-			"id":   "65050437",
-			"name": "นายนพกร แก้วสลับนิล",
+			StudentID: "65050437",
+			Name:      "นายนพกร แก้วสลับนิล",
 		},
 		{
-			"id":   "65050492",
-			"name": "นายบริพัตร จริยาทัศน์กร",
+			StudentID: "65050492",
+			Name:      "นายบริพัตร จริยาทัศน์กร",
 		},
 		{
-			"id":   "65050579",
-			"name": "นายพงวิชญ์ สมตา",
+			StudentID: "65050579",
+			Name:      "นายพงวิชญ์ สมตา",
 		},
 	}
 
 	for _, data := range defaultData {
-		exists, err := client.Exists().Index("members").Id(data["id"].(string)).Do(context.Background())
-		if err != nil {
-			return err
-		}
+		var count int64
+		db.Model(&model.Member{}).Where("student_id = ?", data.StudentID).Count(&count)
 
-		if !exists {
-			_, err := client.Index().
-				Index("members").
-				Id(data["id"].(string)).
-				BodyJson(data).
-				Do(context.Background())
-			if err != nil {
+		if count == 0 {
+			if err := db.Create(&data).Error; err != nil {
 				return err
 			}
 		}

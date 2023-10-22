@@ -3,104 +3,102 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-
 	"os-container-project/internal/config"
 	"os-container-project/internal/model"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/olivere/elastic/v7"
+	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 )
 
 type MemberHandler struct {
-	esConfig *config.ElasticsearchConfig
+	db          *gorm.DB
+	redisClient *redis.Client
 }
 
-func NewMemberHandler(config *config.ElasticsearchConfig) *MemberHandler {
-	return &MemberHandler{esConfig: config}
+func NewMemberHandler(db *gorm.DB, redisClient *config.RedisConfig) *MemberHandler {
+	return &MemberHandler{db: db, redisClient: redisClient.NewRedisClient()}
 }
 
 func (h *MemberHandler) GetMembers(c *fiber.Ctx) error {
-	esClient, err := h.esConfig.NewElasticsearchClient()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error while creating elasticsearch client"})
-	}
-
-	result, err := esClient.Search().Index("members").Do(context.Background())
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error querying elasticsearch"})
-	}
-
 	var members []model.Member
-	for _, hit := range result.Hits.Hits {
-		var member model.Member
-		if err := json.Unmarshal(hit.Source, &member); err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error processing member data"})
-		}
-		members = append(members, member)
+	if err := h.db.Find(&members).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error querying the database"})
 	}
-
 	return c.JSON(members)
 }
 
 func (h *MemberHandler) GetMemberByID(c *fiber.Ctx) error {
-	esClient, err := h.esConfig.NewElasticsearchClient()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error while creating Elasticsearch client"})
+	studentID := c.Params("student_id")
+
+	member, err := h.getMemberFromRedis(studentID)
+	if err == nil {
+		return c.JSON(member)
 	}
 
-	memberID := c.Params("id")
-
-	result, err := esClient.Get().Index("members").Id(memberID).Do(context.Background())
-	if err != nil {
-		if elastic.IsNotFound(err) {
+	var memberFromDB model.Member
+	if err := h.db.First(&memberFromDB, "student_id = ?", studentID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Member not found"})
 		}
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error querying Elasticsearch"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error querying the database"})
 	}
 
-	if !result.Found {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Member not found"})
+	if err := h.setMemberInRedis(studentID, &memberFromDB, 24*time.Hour); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error caching data in Redis"})
 	}
 
-	var member model.Member
-
-	if err := json.Unmarshal(result.Source, &member); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error processing member data"})
-	}
-
-	return c.JSON(member)
+	return c.JSON(memberFromDB)
 }
 
 func (h *MemberHandler) AddMemberHandler(c *fiber.Ctx) error {
-	esClient, err := h.esConfig.NewElasticsearchClient()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error while creating elasticsearch client"})
-	}
-
 	var memberData model.Member
 	if err := c.BodyParser(&memberData); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Cannot parse JSON"})
 	}
 
-	exists, err := esClient.Exists().Index("members").Id(memberData.ID).Do(context.Background())
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error querying elasticsearch"})
-	}
-
-	if exists {
+	var count int64
+	h.db.Model(&model.Member{}).Where("student_id = ?", memberData.StudentID).Count(&count)
+	if count > 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Member already exists"})
 	}
 
-	_, err = esClient.Update().
-		Index("members").
-		Id(memberData.ID).
-		Script(elastic.NewScriptInline("ctx._source = params.data").Lang("painless").Param("data", memberData)).
-		Upsert(memberData).
-		Do(context.Background())
+	if err := h.db.Create(&memberData).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error while adding a member"})
+	}
 
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error while updating Elasticsearch"})
+	if err := h.setMemberInRedis(memberData.StudentID, &memberData, 24*time.Hour); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error caching data in Redis"})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Member added successfully"})
+}
+
+func (h *MemberHandler) getMemberFromRedis(studentID string) (*model.Member, error) {
+	ctx := context.Background()
+	key := "member:" + studentID
+	val, err := h.redisClient.Get(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	var member model.Member
+	err = json.Unmarshal([]byte(val), &member)
+	if err != nil {
+		return nil, err
+	}
+
+	return &member, nil
+}
+
+func (h *MemberHandler) setMemberInRedis(studentID string, member *model.Member, expiration time.Duration) error {
+	ctx := context.Background()
+	key := "member:" + studentID
+	val, err := json.Marshal(member)
+	if err != nil {
+		return err
+	}
+
+	return h.redisClient.Set(ctx, key, val, expiration).Err()
 }

@@ -4,11 +4,11 @@ metadata:
   namespace: os-container-project
 resources:
 - base/secret.yml
-- base/elasticsearch.yml
-- base/kibana.yml
+- base/mariadb.yml
+- base/redis.yml
 - base/webserver.yml
 - base/network-policy.yml
 images:
 - name: os-container-project
   newName: pungrumpy/os-container-project
-  newTag: 3adbc5b1be1a8ea9c7c186e016a4b7a220c0f106
+  newTag: 02d0cffedb10db7ae83f4f923cc9b4659167cd14
