@@ -14,6 +14,7 @@ func main() {
 	app := fiber.New()
 
 	esConfig := config.NewElasicSearchConfig()
+
 	esClient, err := esConfig.NewElasticsearchClient()
 	if err != nil {
 		log.Fatalf("Error while creating elasticsearch client: %s", err.Error())
@@ -21,6 +22,7 @@ func main() {
 	if err := data.SetDefaultData(esClient); err != nil {
 		log.Fatalf("Error while setting default data: %s", err.Error())
 	}
+
 	routes.SetupRoutes(app, esConfig)
 
 	if err := app.Listen(utils.GetEnv("PORT", ":3000").(string)); err != nil {

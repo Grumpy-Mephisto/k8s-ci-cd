@@ -39,7 +39,7 @@ services:
       - os-container-network
 volumes:
   elasticsearch-data:
-  logstash-data:
+    name: elasticsearch-data
 networks:
   os-container-network:
     name: os-container-network

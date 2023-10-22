@@ -8,6 +8,7 @@ import (
 	"os-container-project/internal/model"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/olivere/elastic/v7"
 )
 
 type MemberHandler struct {
@@ -44,14 +45,17 @@ func (h *MemberHandler) GetMembers(c *fiber.Ctx) error {
 func (h *MemberHandler) GetMemberByID(c *fiber.Ctx) error {
 	esClient, err := h.esConfig.NewElasticsearchClient()
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error while creating elasticsearch client"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error while creating Elasticsearch client"})
 	}
 
 	memberID := c.Params("id")
 
 	result, err := esClient.Get().Index("members").Id(memberID).Do(context.Background())
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error querying elasticsearch"})
+		if elastic.IsNotFound(err) {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Member not found"})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error querying Elasticsearch"})
 	}
 
 	if !result.Found {
@@ -78,9 +82,24 @@ func (h *MemberHandler) AddMemberHandler(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Cannot parse JSON"})
 	}
 
-	_, err = esClient.Index().Index("members").BodyJson(memberData).Do(context.Background())
+	exists, err := esClient.Exists().Index("members").Id(memberData.ID).Do(context.Background())
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error while indexing"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error querying elasticsearch"})
+	}
+
+	if exists {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Member already exists"})
+	}
+
+	_, err = esClient.Update().
+		Index("members").
+		Id(memberData.ID).
+		Script(elastic.NewScriptInline("ctx._source = params.data").Lang("painless").Param("data", memberData)).
+		Upsert(memberData).
+		Do(context.Background())
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Error while updating Elasticsearch"})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Member added successfully"})
