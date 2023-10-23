@@ -3,13 +3,14 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"os-container-project/internal/config"
-	"os-container-project/internal/model"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
+
+	"os-container-project/internal/config"
+	"os-container-project/internal/model"
 )
 
 type MemberHandler struct {
@@ -17,8 +18,11 @@ type MemberHandler struct {
 	redisClient *redis.Client
 }
 
-func NewMemberHandler(db *gorm.DB, redisClient *config.RedisConfig) *MemberHandler {
-	return &MemberHandler{db: db, redisClient: redisClient.NewRedisClient()}
+func NewMemberHandler(db *gorm.DB, redisConfig *config.RedisConfig) *MemberHandler {
+	return &MemberHandler{
+		db:          db,
+		redisClient: redisConfig.NewRedisClient(),
+	}
 }
 
 func (h *MemberHandler) GetMembers(c *fiber.Ctx) error {
