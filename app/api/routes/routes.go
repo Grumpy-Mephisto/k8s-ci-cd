@@ -16,4 +16,9 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, redisClient *config.RedisConfig) {
 	member.Get("/", memberHandler.GetMembers)
 	member.Get("/:student_id", memberHandler.GetMemberByID)
 	member.Post("/", memberHandler.AddMemberHandler)
+
+	postHandler := handlers.NewPostHandler(db, redisClient)
+	post := v1.Group("/posts")
+	post.Get("/", postHandler.GetPosts)
+	post.Post("/", postHandler.AddPost)
 }

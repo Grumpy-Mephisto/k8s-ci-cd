@@ -28,6 +28,9 @@ func main() {
 	if err := mariadbClient.AutoMigrate(&model.Member{}); err != nil {
 		log.Fatalf("Error while migrating: %s", err.Error())
 	}
+	if err := mariadbClient.AutoMigrate(&model.Post{}); err != nil {
+		log.Fatalf("Error while migrating: %s", err.Error())
+	}
 	if err := utils.SetDefaultData(mariadbClient); err != nil {
 		log.Fatalf("Error while setting default data: %s", err.Error())
 	}
