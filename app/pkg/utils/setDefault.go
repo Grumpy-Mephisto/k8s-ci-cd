@@ -34,12 +34,12 @@ func SetDefaultData(db *gorm.DB) error {
 		},
 	}
 
-	for _, data := range defaultData {
+	for index := range defaultData {
 		var count int64
-		db.Model(&model.Member{}).Where("student_id = ?", data.StudentID).Count(&count)
+		db.Model(&model.Member{}).Where("student_id = ?", defaultData[index].StudentID).Count(&count)
 
 		if count == 0 {
-			if err := db.Create(&data).Error; err != nil {
+			if err := db.Create(&defaultData[index]).Error; err != nil {
 				return err
 			}
 		}
