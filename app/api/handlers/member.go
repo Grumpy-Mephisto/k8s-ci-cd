@@ -9,7 +9,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 
-	"os-container-project/internal/config"
+	"os-container-project/config"
 	"os-container-project/internal/model"
 )
 

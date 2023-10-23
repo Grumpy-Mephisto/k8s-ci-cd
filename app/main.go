@@ -1,8 +1,8 @@
 package main
 
 import (
-	"os-container-project/internal/api/routes"
-	"os-container-project/internal/config"
+	"os-container-project/api/routes"
+	"os-container-project/config"
 	"os-container-project/internal/model"
 	"os-container-project/pkg/utils"
 

@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"os-container-project/internal/api/handlers"
-	"os-container-project/internal/config"
+	"os-container-project/api/handlers"
+	"os-container-project/config"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
