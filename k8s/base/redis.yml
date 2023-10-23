@@ -17,17 +17,24 @@ spec:
         app: redis
     spec:
       containers:
-        - env:
+        - image: redis:7.2.2
+          name: redis
+          ports:
+            - containerPort: 6379
+              name: redis
+          resources:
+            limits:
+              cpu: '200m'
+              memory: '512Mi'
+            requests:
+              cpu: '100m'
+              memory: '256Mi'
+          env:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
                   name: redis
-          image: redis:7.2.2
-          name: redis
-          ports:
-            - containerPort: 6379
-              name: redis
           command:
             - 'redis-server'
             - '--requirepass'

@@ -17,7 +17,19 @@ spec:
         app: mariadb
     spec:
       containers:
-        - env:
+        - image: mariadb:11.1.2
+          name: mariadb
+          ports:
+            - containerPort: 3306
+              name: mysql
+          resources:
+            limits:
+              cpu: '200m'
+              memory: '512Mi'
+            requests:
+              cpu: '100m'
+              memory: '256Mi'
+          env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -38,11 +50,6 @@ spec:
                 secretKeyRef:
                   key: database
                   name: mariadb
-          image: mariadb:11.1.2
-          name: mariadb
-          ports:
-            - containerPort: 3306
-              name: mysql
 ---
 apiVersion: v1
 kind: Service

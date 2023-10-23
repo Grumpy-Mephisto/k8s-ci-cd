@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     app: webserver
@@ -10,17 +10,18 @@ spec:
   selector:
     matchLabels:
       app: webserver
+  serviceName: webserver
   template:
     metadata:
       labels:
         app: webserver
-      name: webserver
     spec:
       containers:
         - image: os-container-project
           name: webserver
           ports:
             - containerPort: 3000
+              name: webserver
           resources:
             limits:
               cpu: '100m'
