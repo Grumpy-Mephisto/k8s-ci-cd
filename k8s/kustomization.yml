@@ -11,4 +11,4 @@ resources:
 images:
 - name: os-container-project
   newName: pungrumpy/os-container-project
-  newTag: be36765db2982d392bc3e8285905feb28ee6df11
+  newTag: 416b10c2a85582193a4b6f24cb83b5f03701562a
