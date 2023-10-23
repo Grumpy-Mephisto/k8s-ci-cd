@@ -3,7 +3,6 @@ package main
 import (
 	"os-container-project/internal/api/routes"
 	"os-container-project/internal/config"
-	"os-container-project/internal/data"
 	"os-container-project/internal/model"
 	"os-container-project/pkg/utils"
 
@@ -29,7 +28,7 @@ func main() {
 	if err := mariadbClient.AutoMigrate(&model.Member{}); err != nil {
 		log.Fatalf("Error while migrating: %s", err.Error())
 	}
-	if err := data.SetDefaultData(mariadbClient); err != nil {
+	if err := utils.SetDefaultData(mariadbClient); err != nil {
 		log.Fatalf("Error while setting default data: %s", err.Error())
 	}
 
