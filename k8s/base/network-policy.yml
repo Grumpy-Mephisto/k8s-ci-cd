@@ -1,22 +1,33 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: os-container-project-network-policy
+  name: mariadb-network-policy
   namespace: os-container-project
 spec:
   podSelector:
     matchLabels:
-      app: elasticsearch
+      app: mariadb
   policyTypes:
     - Ingress
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              app: kibana
+              app: webserver
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-project-network-policy
+  namespace: os-container-project
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
         - podSelector:
             matchLabels:
               app: webserver
-        - namespaceSelector:
-            matchLabels:
-              name: os-container-project
